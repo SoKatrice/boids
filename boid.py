@@ -1,5 +1,6 @@
-from math import cos,sin,pi
+from math import cos,sin,pi,floor
 import random
+import wall
 
 ################################
 # Classe correspondant aux boids
@@ -29,18 +30,13 @@ class boid:
 
         self.chmgt_angle = 0
 
-        self.wall_bas = 0
-        self.wall_haut = 760
-        self.wall_gauche = 0
-        self.wall_droite = 1130
-        self.bordure_safe = 3 * self.v
+        self.bordure_safe_2 = 4 * self.v
         self.avoided = False
         self.cpt_avoided = 0
 
 
-    def boidBehave(self):
-
-        self.boidAvoid()
+    def boidBehave(self,mur):
+        self.boidAvoid(mur)
         self.boidMove()
         self.boidUpdate()
 
@@ -53,29 +49,33 @@ class boid:
     def boidMeet(self):
         pass
 
-    # Gestion des frontières : changer d'angle ?
-    def boidAvoid(self):
-        if(self.x <= (self.wall_bas+self.bordure_safe) or self.x >= (self.wall_haut-self.bordure_safe) or self.y <= (self.wall_gauche+self.bordure_safe) or self.y >= (self.wall_droite-self.bordure_safe)):
-            self.avoided = True
-            #correction_random = random.uniform(pi/2 - pi/8 ,pi/2 + pi/8 )
-            #self.a = self.a + correction_random
-            self.a = self.a + pi / 2
+    # Sert à détecter si le point est proche d'un mur ou pas
+    def boidWallDetected(self,mur):
+        x = floor(self.x)
+        y = floor(self.y)
+        for i in range(- (self.bordure_safe_2-1), self.bordure_safe_2+1):
+            for j in range(- (self.bordure_safe_2-1), self.bordure_safe_2+1):
+                if( mur.wallHere(x+i,y+j) == True ):
+                    return True
+        return False
 
+
+    def boidAvoid(self,Mur):
+        if(self.boidWallDetected(Mur) == True):
+            self.avoided = True
+            self.a = self.a + pi / 2
             self.cpt_avoided = self.cpt_avoided + 1
             if(self.cpt_avoided >= 10):
                 self.v = self.v + 0.1
-
         else:
             self.avoided = False
             self.cpt_avoided = 0
             self.v = self.v_save
-
+        
     # Mise à jour des x et y, et rajout de hasard dans l'orientation
     def boidUpdate(self):
         self.x = self.nouveau_x
         self.y = self.nouveau_y
-        
-
         if(self.avoided == False):
             if(self.chmgt_angle == 20):
                 nouveau_a = (random.uniform(-pi/4,pi/4))
