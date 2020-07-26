@@ -12,7 +12,7 @@ class Simu(QThread) :
 	
 
 	def run(self) :
-		self.flock = boid(600,202,1,(120 * pi /180))
+		self.flock = boid(90,92,1,120)
 		while True :
 			self.update_pos()
 

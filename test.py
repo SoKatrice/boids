@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 
 
-B1 = boid(63,22,1,(120 * pi /180))
+B1 = boid(6,7,1,45.5)
 B1_x = []
 B1_y = []
 

@@ -18,36 +18,50 @@ import random
 ###############################
 class boid:
 
-    def __init__(self,x,y,v,a):
+    def __init__(self,x,y,speed,angle):
         self.x = x
         self.y = y
-        self.v = v
-        self.v_save = v
-        self.a = a
-        self.nouveau_x = 0
-        self.nouveau_y = 0
-
-        self.chmgt_angle = 0
+        self.speed = speed
+        self.angle = angle
+        self.radian = angle*pi/180
 
         self.wall_bas = 0
-        self.wall_haut = 760
+        # self.wall_haut = 760
+        self.wall_haut = 100
         self.wall_gauche = 0
-        self.wall_droite = 1130
-        self.bordure_safe = 3 * self.v
-        self.avoided = False
-        self.cpt_avoided = 0
+        # self.wall_droite = 1130
+        self.wall_droite = 100
 
 
     def boidBehave(self):
-
-        self.boidAvoid()
         self.boidMove()
-        self.boidUpdate()
 
     # Boid se déplace
     def boidMove(self):
-        self.nouveau_x = self.x + self.v * cos(self.a)
-        self.nouveau_y = self.y + self.v * sin(self.a)
+        if(self.nextToXWalls()):
+            self.angle = 180-self.angle if self.angle<180 else 540-self.angle
+            self.radian = self.angle*pi/180
+        if(self.nextToYWalls()):
+            self.angle = 360-self.angle
+            self.radian = self.angle*pi/180
+        self.x = round(self.x + self.speed * cos(self.radian),3)
+        self.y = round(self.y + self.speed * sin(self.radian),3)
+        
+
+    def nextToXWalls(self):
+        if(self.x - 5 < self.wall_gauche):
+            return True
+        if(self.x + 5 > self.wall_droite):
+            return True
+        return False
+
+    def nextToYWalls(self):
+        if(self.y - 5 < self.wall_bas):
+            return True
+        if(self.y + 5 > self.wall_haut):
+            return True
+        return False
+
 
     # Attention gérer les autres dudez
     def boidMeet(self):
